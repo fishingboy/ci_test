@@ -44,8 +44,10 @@
 // $route['(:num)'] = "bingo/index/$1";
 //$route['(:any)'] = "instant/index/$1";
 // $route["\r\n"] = "welcome";
-$route["\\r\\n"] = "bingo/index/$1";
-$route['(:any)'] = "bingo/index/$1";
+
+
+// $route["\\r\\n"] = "bingo/index/$1";
+// $route['(:any)'] = "bingo/index/$1";
 
 
 $route['default_controller'] = "welcome";
