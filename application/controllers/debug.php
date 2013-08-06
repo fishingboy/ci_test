@@ -5,6 +5,6 @@ class Debug extends CI_Controller
 	public function index()
 	{
 		$this->load->helper("firephp");
-		fb($this);
+		fb_log($this);
 	}
 }
