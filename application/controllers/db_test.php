@@ -106,6 +106,11 @@ class DB_test extends CI_Controller
         echo "更新語法: \$sql = $sql <br>";
     }
 
+    public function test6()
+    {
+        
+    }
+
     // 取回 query 的字串
     private function _print_queries()
     {
