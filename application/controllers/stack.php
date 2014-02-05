@@ -12,31 +12,46 @@ class Stack extends CI_Controller
 	}
 
 
-	public function test()
+	public function test($n=0)
 	{
-		$point_array = array
-		(
-			array('00', '01'),
-			array('10', '11'),
-		);
+		// $point_array = array
+		// (
+		// 	array('00', '01'),
+		// 	array('10', '11'),
+		// );
 
 		// $point_array = array
 		// (
-		// 	array('1', '2', '3', '4', '5', '6', '7', '8', '9', '0'),
-		// 	array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'),
-		// 	array('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '~'),
-		// 	array('z', 'x', 'c', 'v', 'b', 'n', 'm', 'a', 's', 'd', 'f', 'g', 'h', 'j'),
+		// 	array('1', '2', '3'), 
+		// 	array('4', '5', '6'), 
+		// 	array('7', '8', '9', '0')
 		// );
 
-		$this->benchmark->mark('m1');
-		$this->all_path($point_array);
-		$this->benchmark->mark('m2');
-		echo $this->benchmark->elapsed_time('m1', 'm2') . " Second. <br>";	
+		$point_array = array
+		(
+			array('1', '2', '3', '4', '5', '6', '7', '8', '9', '0'),
+			array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'),
+			array('!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+', '~'),
+			array('z', 'x', 'c', 'v', 'b', 'n', 'm', 'a', 's', 'd', 'f', 'g', 'h', 'j'),
+		);
 
-		$this->benchmark->mark('m3');
-		$this->all_path2($point_array);
-		$this->benchmark->mark('m4');
-		echo $this->benchmark->elapsed_time('m3', 'm4') . " Second. <br>";	
+
+
+		if ($n == 0 || $n == 1)
+		{
+			$this->benchmark->mark('m1');
+			$this->all_path($point_array);
+			$this->benchmark->mark('m2');
+			echo $this->benchmark->elapsed_time('m1', 'm2') . " Second. <br>";	
+		}
+
+		if ($n == 0 || $n == 2)
+		{
+			$this->benchmark->mark('m3');
+			$this->all_path2($point_array);
+			$this->benchmark->mark('m4');
+			echo $this->benchmark->elapsed_time('m3', 'm4') . " Second. <br>";	
+		}
 	}
 
 	/* 遞迴寫法 */
@@ -62,7 +77,7 @@ class Stack extends CI_Controller
 
 	public function show_path($path)
 	{
-		echo implode(" -> ", $path) . "<br>";
+		// echo "<div style='color:#f00'>" . implode(" -> ", $path) . "</div>";
 	}
 
 	/* 堆疊寫法 */
@@ -82,7 +97,7 @@ class Stack extends CI_Controller
 			$index[] = 0;
 		}
 
-		echo "<pre>" . print_r($length, TRUE). "</pre>";
+		// echo "<pre>" . print_r($length, TRUE). "</pre>";
 
 
 
@@ -91,21 +106,19 @@ class Stack extends CI_Controller
 
 		$depth = 0;
 		$k=0;
-		while (count($stack))
+		while ($index[0] != $length[0])
 		{
-			if ($k++ > 100) break;
+			// echo "<br>";
+			// echo "depth=$depth<br>";
+			// if ($k++ > 100) break;
 
 			$next_depth = $depth + 1;
 			if ($next_depth == $max_depth) 
 			{
 				$this->show_path($stack);
-				$node = array_pop($stack);
-				$index[$depth]++;
-				$depth--;
-				continue;
 			}
 
-			if ($index[$next_depth] < $length[$next_depth] -1)
+			if ($next_depth != $max_depth && $index[$next_depth] < $length[$next_depth])
 			{
 				$node = $point_array[$next_depth][$index[$next_depth]];
 				array_push($stack, $node);
@@ -115,9 +128,11 @@ class Stack extends CI_Controller
 			{
 				$node = array_pop($stack);
 				$index[$depth]++;
+				$index[$depth+1] = 0;
 				$depth--;
+				// echo "{$k}. pop2 <br>";
 			}
-			echo print_r($stack) . "<br>";
+			// echo "{$k}. " . print_r($stack, true) . "<br>";
 		}
 
 		return true;
