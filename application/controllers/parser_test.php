@@ -28,7 +28,14 @@ class Parser_test extends CI_Controller {
 		$data = array("title" => "fishingboy", "body" => "很菜!!");
 		$this->parser->parse("parser_test_tmpl", $data);
 	}
-}
 
-/* End of file welcome.php */
-/* Location: ./application/controllers/welcome.php */
+	public function test2()
+	{
+		$data = array('data' => array
+		(
+			array('account' => 'wbkuo',   'name' => "郭文彬"),
+			array('account' => 'leo.kuo', 'name' => "Leo.Kuo")
+		));
+		$this->parser->parse("parser_test_view", $data);
+	}
+}
