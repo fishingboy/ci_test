@@ -51,7 +51,8 @@
 
 
 $route['default_controller'] = "welcome";
-$route['404_override'] = '';
+$route['404_override'] = 'err';
+// $route['404_override'] = 'http://tw.yahoo.com';
 
 
 /* End of file routes.php */

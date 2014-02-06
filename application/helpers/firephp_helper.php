@@ -3,6 +3,7 @@ function fb_log($msg)
 {
     static $init;
     static $firephp;
+    static $output;
     
     if (!$init)
     {
