@@ -15,6 +15,7 @@ class Ext_sort extends CI_Controller
 		{ 
 			$sort_hander->add_data(rand(0, 100));
 		}
-		$sort_hander->get_result();
+		// $sort_hander->get_result();
+		$sort_hander->create_result();
 	}
 }

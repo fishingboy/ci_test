@@ -65,10 +65,26 @@ class External_sort
     // 產生結果檔案
     public function create_result()
     {
+        // 把剩餘的資料寫入
+        if (count($this->tmp_array) > 0)
+        {
+            $this->write_file($this->tmp_array);
+        }
+
+        $fp_result = fopen($this->result_file, "w");
+
         // 合併結果
+        $tmp = array();
+        while (count($this->file_array))
+        {
+            unset($min);
+            foreach ($this->file_array as $fp)
+            {
+                if (!isset($min))
+            }
+        }
 
-
-    
+        fclose($fp_result);
     }
 
     public function get_result()
