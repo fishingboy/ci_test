@@ -45,10 +45,14 @@ class External_sort
     // 寫入暫存檔案
     public function write_file($data)
     {
+        // 建立暫存檔案
         $this->file_array[] = tmpfile();
         $fp = $this->file_array[count($this->file_array)-1];
 
+        // 排序
         sort($this->tmp_array);
+
+        // 寫入暫存檔案
         foreach ($this->tmp_array as $value) 
         {
             fwrite($fp, $value."\n");
@@ -62,6 +66,9 @@ class External_sort
     public function create_result()
     {
         // 合併結果
+
+
+    
     }
 
     public function get_result()
