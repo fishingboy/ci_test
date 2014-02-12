@@ -728,6 +728,7 @@ class CI_Input {
 	{
 		if ( ! preg_match("/^[a-z0-9:_\/-]+$/i", $str))
 		{
+			header("Location: " . WWW_ROOT . "error");
 			exit('Disallowed Key Characters.');
 		}
 

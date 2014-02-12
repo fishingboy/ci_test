@@ -56,6 +56,14 @@ class Stack extends CI_Controller
 			$this->benchmark->mark('m4');
 			echo $this->benchmark->elapsed_time('m3', 'm4') . " Second. <br>";	
 		}
+
+		if ($n == 0 || $n == 3)
+		{
+			$this->benchmark->mark('m5');
+			$this->all_path3($point_array);
+			$this->benchmark->mark('m6');
+			echo $this->benchmark->elapsed_time('m5', 'm6') . " Second. <br>";	
+		}
 	}
 
 	/* 遞迴寫法 */
@@ -101,10 +109,6 @@ class Stack extends CI_Controller
 			$index[] = 0;
 		}
 
-		// echo "<pre>" . print_r($length, TRUE). "</pre>";
-
-
-
 		// 把 0,0  放進堆疊
 		array_push($stack, $point_array[0][0]);
 
@@ -112,10 +116,6 @@ class Stack extends CI_Controller
 		$k=0;
 		while ($index[0] != $length[0])
 		{
-			// echo "<br>";
-			// echo "depth=$depth<br>";
-			// if ($k++ > 100) break;
-
 			$next_depth = $depth + 1;
 			if ($next_depth == $max_depth) 
 			{
@@ -124,19 +124,64 @@ class Stack extends CI_Controller
 
 			if ($next_depth != $max_depth && $index[$next_depth] < $length[$next_depth])
 			{
-				$node = $point_array[$next_depth][$index[$next_depth]];
-				array_push($stack, $node);
+				array_push($stack, $point_array[$next_depth][$index[$next_depth]]);
 				$depth++;
 			}
 			else
 			{
-				$node = array_pop($stack);
+				array_pop($stack);
 				$index[$depth]++;
 				$index[$depth+1] = 0;
 				$depth--;
-				// echo "{$k}. pop2 <br>";
 			}
-			// echo "{$k}. " . print_r($stack, true) . "<br>";
+		}
+
+		return true;
+	}
+
+	/* 堆疊寫法 */
+	public function all_path3($point_array)
+	{
+		$max_depth = count($point_array);
+
+		// 堆疊
+		$stack = array();
+
+		
+		$index = array();  // 每一層目前的位置
+		$length = array(); // 找出每一層的深度
+		for ($i=0, $i_max=count($point_array); $i<$i_max; $i++)
+		{
+			$length[] = count($point_array[$i]);
+			$index[] = 0;
+		}
+
+		// 把 0,0  放進堆疊
+		array_push($stack, $point_array[0][0]);
+
+		$depth = 0;
+		$k=0;
+		while ($index[0] != $length[0])
+		{
+			$next_depth = $depth + 1;
+			if ($next_depth == $max_depth) 
+			{
+				$this->show_path($stack);
+			}
+
+			if ($next_depth != $max_depth && $index[$next_depth] < $length[$next_depth])
+			{
+				$stack[] = $point_array[$next_depth][$index[$next_depth]];
+				$depth++;
+			}
+			else
+			{
+				array_pop($stack);
+				// unset($stack[count($stack)-1]);
+				$index[$depth]++;
+				$index[$depth+1] = 0;
+				$depth--;
+			}
 		}
 
 		return true;
