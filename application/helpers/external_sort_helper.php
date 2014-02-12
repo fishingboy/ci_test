@@ -7,7 +7,7 @@ class External_sort
 {
     // 設定
     var $unique      = FALSE;           // 是否移除重覆資料
-    var $block_size  = 10;            // 幾筆資料寫入一次檔案
+    var $block_size  = 3;               // 幾筆資料寫入一次檔案
     var $result_file = "result.txt";    // 結果檔案
 
     // 資料
@@ -73,15 +73,53 @@ class External_sort
 
         $fp_result = fopen($this->result_file, "w");
 
+        // 把索引移到最前面
+        foreach ($this->file_array as $fp)
+        {
+            fseek($fp, 0);
+        }
+
         // 合併結果
         $tmp = array();
+        $k = 0;
         while (count($this->file_array))
         {
+            if ($k++ > 10000) break;
+
             unset($min);
-            foreach ($this->file_array as $fp)
+            unset($min_i);
+            foreach ($this->file_array as $i => $fp)
             {
-                if (!isset($min))
+                echo "$i => $fp <br>";
+
+                // 補抓資料
+                if (!isset($tmp[$i]))
+                {
+                    $tmp[$i] = fgets($fp);
+                    echo "line = {$tmp[$i]} <br>";
+                    if ($tmp[$i] === FALSE)
+                    {
+                        echo "unset(!) <br>";
+                        unset($this->file_array[$i]);
+                    }
+                }
+
+                echo $tmp[$i] . " !!<br>";
+
+                // 找出最小值
+                if (!isset($min) || $min > $tmp[$i])
+                {
+                    // echo "{$min} > {$tmp[$i]} <br>";
+                    $min = $tmp[$i];
+                    $min_i = $i;
+                } 
             }
+
+            echo "min = $min <br>";
+
+            // 寫入暫存檔
+            fwrite($fp_result, $min);
+            unset($tmp[$min_i]);
         }
 
         fclose($fp_result);
@@ -98,15 +136,16 @@ class External_sort
         echo "\$file_num = " . count($this->file_array) . "<br>";
         echo "<pre>" . print_r($this->file_array, TRUE). "</pre>";
         
-        while (count($this->file_array))
+        foreach ($this->file_array as $fp)
         {
-            $fp = array_pop($this->file_array);
+            // $fp = array_pop($this->file_array);
             fseek($fp, 0);            
             while (($line = fgets($fp)) !== FALSE)
             {
                 echo "$line <br>";
             }
-            fclose($fp); // this removes the file
+            // fclose($fp); // this removes the file
+            echo "=========================<br>";
         }
     }
 }
