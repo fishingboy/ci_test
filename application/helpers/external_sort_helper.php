@@ -7,8 +7,9 @@ class External_sort
 {
     // 設定
     var $unique      = FALSE;           // 是否移除重覆資料
-    var $block_size  = 3;               // 幾筆資料寫入一次檔案
+    var $block_size  = 1000;            // 幾筆資料寫入一次檔案
     var $result_file = "result.txt";    // 結果檔案
+    var $data_type   = "number";        // 文字(text) 或 數字(Number)
 
     // 資料
     var $num        = 0;                // 項目數量
@@ -18,8 +19,10 @@ class External_sort
 
     public function __construct($config=NULL)
     {
-        if (isset($config['unique']))     $this->unique = $config['unique'];
-        if (isset($config['block_size'])) $this->block_size = $config['block_size'];
+        if (isset($config['unique']))      $this->unique      = $config['unique'];
+        if (isset($config['block_size']))  $this->block_size  = $config['block_size'];
+        if (isset($config['result_file'])) $this->result_file = $config['result_file'];
+        if (isset($config['data_type']))   $this->data_type   = $config['data_type'];
     }
 
     // 新增項目
@@ -36,7 +39,7 @@ class External_sort
         }
 
         // 超過數量限制，寫入檔案
-        if (count($this->tmp_array) > $this->block_size)
+        if (count($this->tmp_array) >= $this->block_size)
         {
             $this->write_file($this->tmp_array);
         }
@@ -90,36 +93,33 @@ class External_sort
             unset($min_i);
             foreach ($this->file_array as $i => $fp)
             {
-                echo "$i => $fp <br>";
-
                 // 補抓資料
                 if (!isset($tmp[$i]))
                 {
-                    $tmp[$i] = fgets($fp);
-                    echo "line = {$tmp[$i]} <br>";
-                    if ($tmp[$i] === FALSE)
+                    $t = fgets($fp);
+                    if ($t === FALSE)
                     {
-                        echo "unset(!) <br>";
                         unset($this->file_array[$i]);
+                        continue;
                     }
+                    $tmp[$i] = ($this->data_type == "number") ? intval($t) : trim($t);
                 }
 
-                echo $tmp[$i] . " !!<br>";
 
                 // 找出最小值
                 if (!isset($min) || $min > $tmp[$i])
                 {
-                    // echo "{$min} > {$tmp[$i]} <br>";
                     $min = $tmp[$i];
                     $min_i = $i;
                 } 
             }
 
-            echo "min = $min <br>";
-
             // 寫入暫存檔
-            fwrite($fp_result, $min);
-            unset($tmp[$min_i]);
+            if (count($this->file_array))
+            {
+                fwrite($fp_result, $min . "\n");
+                unset($tmp[$min_i]);
+            }
         }
 
         fclose($fp_result);
@@ -133,12 +133,8 @@ class External_sort
             $this->write_file($this->tmp_array);
         }
 
-        echo "\$file_num = " . count($this->file_array) . "<br>";
-        echo "<pre>" . print_r($this->file_array, TRUE). "</pre>";
-        
         foreach ($this->file_array as $fp)
         {
-            // $fp = array_pop($this->file_array);
             fseek($fp, 0);            
             while (($line = fgets($fp)) !== FALSE)
             {
