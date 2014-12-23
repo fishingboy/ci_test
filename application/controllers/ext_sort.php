@@ -18,7 +18,7 @@ class Ext_sort extends CI_Controller
         ));
 
 
-		for ($i=0; $i <20; $i++) 
+		for ($i=0; $i <1000; $i++) 
 		{ 
 			$sort_hander->add_data(rand(0, 10000));
 		}
@@ -36,5 +36,6 @@ class Ext_sort extends CI_Controller
 
 		// $sort_hander->get_result();
 		$sort_hander->create_result();
+        echo "排序完畢!";
 	}
 }
