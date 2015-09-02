@@ -1,0 +1,8 @@
+$color1: #fff;
+$color2: #EFE;
+div {
+    color: $color1; background: $color2;
+    .title {
+        font-size:14px;
+    }
+}
