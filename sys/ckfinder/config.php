@@ -39,15 +39,14 @@ function CheckAuthentication()
 	// forget to add session_start() at the top of this file.
 
 
-    if (session_id() == '') {
-        @session_start();
-    }
+    // if (session_id() == '') {
+    //     @session_start();
+    // }
 
-    return isset( $_SESSION['ckfinder_auth'] ) && $_SESSION['ckfinder_auth'] == true;
+    // return isset( $_SESSION['ckfinder_auth'] ) && $_SESSION['ckfinder_auth'] == true;
 
-
-
-
+	// TODO : 上線前一定要確定有建立 SESSION
+	return TRUE;
 }
 
 // LicenseKey : Paste your license key here. If left blank, CKFinder will be
@@ -77,7 +76,8 @@ Examples:
 
 ATTENTION: The trailing slash is required.
 */
-$baseUrl = '/public/ckfinder/userfiles/';
+// TODO: 修改 $base_url
+$baseUrl = '/sys/ckfinder/userfiles/';
 
 /*
 $baseDir : the path to the local directory (in the server) which points to the

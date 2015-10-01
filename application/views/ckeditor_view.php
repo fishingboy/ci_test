@@ -4,7 +4,9 @@
         <meta charset="utf-8">
         <title>A Simple Page with CKEditor</title>
         <!-- Make sure the path to CKEditor is correct. -->
+        <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
         <script src="/sys/ckeditor/ckeditor.js"></script>
+        <script src="/sys/ckfinder/ckfinder.js"></script>
     </head>
     <body>
         <form>
@@ -17,9 +19,19 @@
             <?php endif; ?>
 
             <script>
-                // Replace the <textarea id="editor1"> with a CKEditor
-                // instance, using default configuration.
-                CKEDITOR.replace( 'editor1' );
+                $(function ()
+                {
+                    var ck_editor1 = CKEDITOR.replace( 'editor1',
+                    {
+                        filebrowserBrowseUrl      : 'sys/ckfinder/ckfinder.html',
+                        filebrowserImageBrowseUrl : 'sys/ckfinder/ckfinder.html?type=Images',
+                        filebrowserFlashBrowseUrl : 'sys/ckfinder/ckfinder.html?type=Flash',
+                        filebrowserUploadUrl      : 'sys/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files',
+                        filebrowserImageUploadUrl : 'sys/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Images',
+                        filebrowserFlashUploadUrl : 'sys/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Flash'
+                    });
+                    CKFinder.setupCKEditor( ck_editor1, '/sys/ckfinder/') ;
+                });
             </script>
             <input type='submit'>
         </form>
