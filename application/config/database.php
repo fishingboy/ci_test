@@ -50,8 +50,8 @@ $active_record = TRUE;
 
 $db['default']['hostname'] = 'localhost';
 $db['default']['username'] = 'root';
-$db['default']['password'] = '';
-$db['default']['database'] = 'ci';
+$db['default']['password'] = '11111';
+$db['default']['database'] = 'test';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;
@@ -63,6 +63,38 @@ $db['default']['dbcollat'] = 'utf8_general_ci';
 $db['default']['swap_pre'] = '';
 $db['default']['autoinit'] = TRUE;
 $db['default']['stricton'] = FALSE;
+
+$db['zuvio']['hostname'] = 'localhost';
+$db['zuvio']['username'] = 'root';
+$db['zuvio']['password'] = '11111';
+$db['zuvio']['database'] = 'zuvio';
+$db['zuvio']['dbdriver'] = 'mysql';
+$db['zuvio']['dbprefix'] = '';
+$db['zuvio']['pconnect'] = TRUE;
+$db['zuvio']['db_debug'] = TRUE;
+$db['zuvio']['cache_on'] = FALSE;
+$db['zuvio']['cachedir'] = '';
+$db['zuvio']['char_set'] = 'utf8';
+$db['zuvio']['dbcollat'] = 'utf8_general_ci';
+$db['zuvio']['swap_pre'] = '';
+$db['zuvio']['autoinit'] = TRUE;
+$db['zuvio']['stricton'] = FALSE;
+
+$db['zuvio2']['hostname'] = 'localhost';
+$db['zuvio2']['username'] = 'root';
+$db['zuvio2']['password'] = '11111';
+$db['zuvio2']['database'] = 'zuvio2';
+$db['zuvio2']['dbdriver'] = 'mysql';
+$db['zuvio2']['dbprefix'] = '';
+$db['zuvio2']['pconnect'] = TRUE;
+$db['zuvio2']['db_debug'] = TRUE;
+$db['zuvio2']['cache_on'] = FALSE;
+$db['zuvio2']['cachedir'] = '';
+$db['zuvio2']['char_set'] = 'utf8';
+$db['zuvio2']['dbcollat'] = 'utf8_general_ci';
+$db['zuvio2']['swap_pre'] = '';
+$db['zuvio2']['autoinit'] = TRUE;
+$db['zuvio2']['stricton'] = FALSE;
 
 
 /* End of file database.php */
