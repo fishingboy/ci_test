@@ -147,40 +147,5 @@
             "web service",
             "xml"
         ]
-    },
-    {
-        "name": "fishingboy/external_sort",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/fishingboy/ExternalSort.git",
-            "reference": "94a9e8bc08c1192cc929c240cb6f2762c66653a5"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/fishingboy/ExternalSort/zipball/94a9e8bc08c1192cc929c240cb6f2762c66653a5",
-            "reference": "94a9e8bc08c1192cc929c240cb6f2762c66653a5",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.2.0"
-        },
-        "time": "2017-04-08T05:32:53+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "fishingboy\\external_sort\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "authors": [
-            {
-                "name": "fishingboy",
-                "email": "et282523@hotmail.com"
-            }
-        ],
-        "description": "external sort PHP library"
     }
 ]
