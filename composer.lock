@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f3799d72ad12c283dab65517b3d4f12",
+    "content-hash": "72451dc6d6ff9bbceea59a313d94fdf4",
     "packages": [
         {
             "name": "ccampbell/chromephp",
@@ -93,6 +93,39 @@
             "time": "2016-07-18T04:51:16+00:00"
         },
         {
+            "name": "fishingboy/external_sort",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/fishingboy/ExternalSort.git",
+                "reference": "94a9e8bc08c1192cc929c240cb6f2762c66653a5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/fishingboy/ExternalSort/zipball/94a9e8bc08c1192cc929c240cb6f2762c66653a5",
+                "reference": "94a9e8bc08c1192cc929c240cb6f2762c66653a5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "fishingboy\\external_sort\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "fishingboy",
+                    "email": "et282523@hotmail.com"
+                }
+            ],
+            "description": "external sort PHP library",
+            "time": "2017-04-08T05:32:53+00:00"
+        },
+        {
             "name": "php-curl-class/php-curl-class",
             "version": "7.2.0",
             "source": {
@@ -154,7 +187,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ccampbell/chromephp": 20
+        "ccampbell/chromephp": 20,
+        "fishingboy/external_sort": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

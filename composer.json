@@ -2,7 +2,8 @@
     "require": {
         "ccampbell/chromephp": "dev-master",
         "firebase/php-jwt": "^4.0",
-        "php-curl-class/php-curl-class": "^7.2"
+        "php-curl-class/php-curl-class": "^7.2",
+        "fishingboy/external_sort": "dev-master"
     },
     "config": {
        "preferred-install": "dist"
