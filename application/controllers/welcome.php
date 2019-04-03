@@ -21,10 +21,6 @@ class Welcome extends CI_Controller {
 	{
 		$this->load->library("unit_test");
 		$this->load->view('welcome_message');
-		$this->unit->run(1, 2);
-		$r = $this->unit->result();
-		echo "<pre>r = " . print_r($r, TRUE). "</pre>";
-
 	}
 }
 
