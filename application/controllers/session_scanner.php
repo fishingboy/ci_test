@@ -7,6 +7,8 @@ class Session_scanner extends CI_Controller
     private $curl_error;
     private $http_status_code;
     private $response_body;
+    private $session_path = "/tmp2";
+    private $curl_timeout = 60;
 
     public function __construct()
     {
@@ -23,6 +25,30 @@ class Session_scanner extends CI_Controller
 
         $urls = $this->getScanUrls($controllers);
         echo "<pre>urls = " . print_r($urls, true) . "</pre>\n";
+	}
+
+    public function scan()
+    {
+        // 清除 session
+        $this->clearSession();
+
+        // 取出所有 method
+        $controllers = $this->getControllers($this->path);
+        $urls = $this->getScanUrls($controllers);
+
+        // 逐一 post
+        $total = 0;
+        foreach ($urls as $url) {
+            foreach ($url['methods'] as $method) {
+                $total++;
+                $method_url = "{$this->url}/{$url['controller_name']}/{$method['method_name']}" . str_repeat("/1", $method['arg_count']);
+                echo "<pre>url = " . print_r($method_url, true) . "</pre>\n";
+
+                $ret = $this->curlPost($method_url, [], $http_status_code, $response_body);
+                echo "<pre>ret = " . print_r($ret, true) . "</pre>\n";
+                break 2;
+            }
+        }
 	}
 
     private function getControllers($path)
@@ -54,6 +80,11 @@ class Session_scanner extends CI_Controller
                 $method_name = $matches[1];
                 $args = $matches[2];
                 $arg_count = ($args) ? count(explode(",", $matches[2])) : 0;
+
+                if ($method_name == "__construct") {
+                    continue;
+                }
+
                 $methods[] = [
                     'method_name' => $method_name,
                     'args'        => $args,
@@ -124,15 +155,37 @@ class Session_scanner extends CI_Controller
     {
         $urls = [];
         foreach ($controllers as $controller) {
-            $controller_name = str_replace($this->path, "", $controller);
+            $controller_name = str_replace("{$this->path}/", "", $controller);
             $controller_name = str_replace(".php", "", $controller_name);
             $methods = $this->getMethods($controller);
             $urls[] = [
                 'controller_name' => $controller_name,
                 'methods' => $methods,
             ];
-
         }
         return $urls;
+    }
+
+    public function clearSession()
+    {
+        shell_exec("rm -rf {$this->session_path}/*");
+    }
+
+    /**
+     * 計算目錄內的檔案數
+     * @param $path
+     * @return int
+     */
+    private function getFolderItemCount($path)
+    {
+        $dir = opendir($path);
+        $count = 0;
+        while ($f = readdir($dir)) {
+            $file = "$path/$f";
+            if (is_file($file)) {
+                $count++;
+            }
+        }
+        return $count;
     }
 }
