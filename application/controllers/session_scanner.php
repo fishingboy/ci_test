@@ -2,54 +2,139 @@
 
 class Session_scanner extends CI_Controller
 {
-    private $path = "/home/vagrant/Code/www_irs/application/controllers";
-    private $url = "http://irs.local";
+    private $systems = [
+        'irs' => [
+            "path" => "/home/vagrant/Code/www_irs/application/controllers",
+            "url" => "http://irs.local",
+            "session_path" => "/tmp2",
+        ],
+        'irs2' => [
+            "path" => "/home/vagrant/Code/www_irs2/application/controllers",
+            "url" => "http://irs2.local",
+            "session_path" => "/tmp3",
+        ],
+    ];
+
     private $curl_error;
     private $http_status_code;
     private $response_body;
-    private $session_path = "/tmp2";
     private $curl_timeout = 60;
+    private $header;
 
     public function __construct()
     {
         parent::__construct();
+
+        $this->benchmark->mark('start');
+    }
+
+    public function showTime()
+    {
+        $this->benchmark->mark('end');
+        echo $this->benchmark->elapsed_time('start', 'end') . "秒";
     }
 
     /**
      * 掃描 irs session 產生狀況
+     * @param string $system
      */
-    public function index()
+    public function index($system = "irs")
     {
-        $controllers = $this->getControllers($this->path);
+        $system_path = $this->systems[$system]['path'];
+        $system_url = $this->systems[$system]['url'];
+        $system_session_path = $this->systems[$system]['session_path'];
+
+        $controllers = $this->getControllers($system_path);
         echo "<pre>controllers = " . print_r($controllers, true) . "</pre>\n";
 
-        $urls = $this->getScanUrls($controllers);
+        $urls = $this->getScanUrls($controllers, $system_path);
         echo "<pre>urls = " . print_r($urls, true) . "</pre>\n";
+
+        $this->showTime();
 	}
 
-    public function scan()
+    /**
+     *
+     * @param string $system
+     */
+    public function scan($system = "irs")
     {
+        $system_path = $this->systems[$system]['path'];
+        $system_url = $this->systems[$system]['url'];
+        $system_session_path = $this->systems[$system]['session_path'];
+
         // 清除 session
-        $this->clearSession();
+        $this->clearSession($system_session_path);
 
         // 取出所有 method
-        $controllers = $this->getControllers($this->path);
-        $urls = $this->getScanUrls($controllers);
+        $controllers = $this->getControllers($system_path);
+        $urls = $this->getScanUrls($controllers, $system_path);
 
         // 逐一 post
         $total = 0;
+        $error_total = 0;
         foreach ($urls as $url) {
             foreach ($url['methods'] as $method) {
+                $controller_name = strtolower($url['controller_name']);
+                $method_name = strtolower($method['method_name']);
+
+                if (false !== strpos($controller_name, 'script')) {
+//                    echo "<pre>exit.controller_name = " . print_r($controller_name, true) . "</pre>\n";
+                    continue;
+                }
+
+                if (false !== strpos($controller_name, 'system')) {
+//                    echo "<pre>exit.controller_name = " . print_r($controller_name, true) . "</pre>\n";
+                    continue;
+                }
+
+                if (false !== strpos($controller_name, 'sync')) {
+//                    echo "<pre>exit.controller_name = " . print_r($controller_name, true) . "</pre>\n";
+                    continue;
+                }
+
+                if (false !== strpos($method_name, 'delete')) {
+//                    echo "<pre>exit.method_name = " . print_r($method_name, true) . "</pre>\n";
+                    continue;
+                }
+//
+//                if ( ! in_array($url['controller_name'], ["app_v2", "irs"])) {
+//                    continue;
+//                }
+                if ( ! in_array($url['controller_name'], ["app_v2"])) {
+                    continue;
+                }
+
                 $total++;
-                $method_url = "{$this->url}/{$url['controller_name']}/{$method['method_name']}" . str_repeat("/1", $method['arg_count']);
-                echo "<pre>url = " . print_r($method_url, true) . "</pre>\n";
+                $method_url = "{$system_url}/{$url['controller_name']}/{$method['method_name']}" . str_repeat("/1", $method['arg_count']);
+//                echo "url = <a href='$method_url' target='_blank'>$method_url</a><br>";
 
                 $ret = $this->curlPost($method_url, [], $http_status_code, $response_body);
+                $is_error = $this->isError($ret);
+
+                echo "header = " . $this->getResponseHeader() . "<br>";
                 echo "<pre>ret = " . print_r($ret, true) . "</pre>\n";
-                break 2;
+                if ($is_error) {
+                    $error_total++;
+//                    break 2;
+                    echo "url = <a href='$method_url' target='_blank'>$method_url</a>, Error!<br>";
+                } else {
+                    echo "url = <a href='$method_url' target='_blank'>$method_url</a>, Ok!<br>";
+                }
+//
+                if ($total > 10) {
+                    break 2;
+                }
             }
         }
-	}
+
+        echo "<div>total: $total, error_total = $error_total</div>";
+
+        $session_count = $this->getFolderItemCount($system_session_path);
+        echo "<div>session count: $session_count</div>";
+
+        $this->showTime();
+    }
 
     private function getControllers($path)
     {
@@ -122,14 +207,24 @@ class Session_scanner extends CI_Controller
         // post 參數
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
 
+        // 拿 header
+        curl_setopt($curl, CURLOPT_HEADER, 1);
+
         // 執行 curl
         $data = curl_exec($curl);
+
+
 
         // 檢查是否有錯誤
         $this->curl_error = "";
         if (false === $data) {
             $this->curl_error = curl_error($curl);;
         }
+
+        // 分離 header 和 content
+        $header_size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $this->header = substr($data, 0, $header_size);
+        $body = substr($data, $header_size);
 
         // 取得 response code
         $http_status_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
@@ -141,21 +236,26 @@ class Session_scanner extends CI_Controller
         $this->response_body = $response_body;
 
         // json decode
-        if ($data) {
-            $tmp = json_decode($data, true);
+        if ($body) {
+            $tmp = json_decode($body, true);
             if ($tmp) {
-                $data = $tmp;
+                $body = $tmp;
             }
         }
 
-        return $data;
+        return $body;
     }
 
-    private function getScanUrls(array $controllers)
+    private function getResponseHeader()
+    {
+        return $this->header;
+    }
+
+    private function getScanUrls(array $controllers, $path)
     {
         $urls = [];
         foreach ($controllers as $controller) {
-            $controller_name = str_replace("{$this->path}/", "", $controller);
+            $controller_name = str_replace("{$path}/", "", $controller);
             $controller_name = str_replace(".php", "", $controller_name);
             $methods = $this->getMethods($controller);
             $urls[] = [
@@ -166,9 +266,10 @@ class Session_scanner extends CI_Controller
         return $urls;
     }
 
-    public function clearSession()
+    public function clearSession($session_path)
     {
-        shell_exec("rm -rf {$this->session_path}/*");
+        shell_exec("rm -rf {$session_path}/*");
+        echo "clear session folder: `$session_path` <br>";
     }
 
     /**
@@ -187,5 +288,26 @@ class Session_scanner extends CI_Controller
             }
         }
         return $count;
+    }
+
+    private function isError($ret)
+    {
+        if (is_array($ret)) {
+            return false;
+        }
+
+        if (strpos($ret, "Fatal error")) {
+            return true;
+        }
+
+        if (strpos($ret, "Severity: Notice")) {
+            return true;
+        }
+
+        if (strpos($ret, "Warning")) {
+            return true;
+        }
+
+        return false;
     }
 }
