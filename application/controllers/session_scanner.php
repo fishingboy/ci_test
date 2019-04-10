@@ -72,6 +72,7 @@ class Session_scanner extends CI_Controller
 
         // 逐一 post
         $total = 0;
+        $session_total = 0;
         $error_total = 0;
         foreach ($urls as $url) {
             foreach ($url['methods'] as $method) {
@@ -101,7 +102,7 @@ class Session_scanner extends CI_Controller
 //                if ( ! in_array($url['controller_name'], ["app_v2", "irs"])) {
 //                    continue;
 //                }
-                if ( ! in_array($url['controller_name'], ["app_v2"])) {
+                if ( ! in_array($url['controller_name'], ["question"])) {
                     continue;
                 }
 
@@ -112,26 +113,34 @@ class Session_scanner extends CI_Controller
                 $ret = $this->curlPost($method_url, [], $http_status_code, $response_body);
                 $is_error = $this->isError($ret);
 
-                echo "header = " . $this->getResponseHeader() . "<br>";
-                echo "<pre>ret = " . print_r($ret, true) . "</pre>\n";
+                $header = $this->getResponseHeader();
+                $is_enable_session = $this->isEnableSession($header);
+                $session_status = "<span style='color:green'>[Session:Off] </span>";
+                if ($is_enable_session) {
+                    $session_total++;
+                    $session_status = "<span style='color:red'>[Session:On] </span>";
+                }
+
+//                echo "<pre>ret = " . print_r($ret, true) . "</pre>\n";
                 if ($is_error) {
                     $error_total++;
 //                    break 2;
-                    echo "url = <a href='$method_url' target='_blank'>$method_url</a>, Error!<br>";
+                    echo "{$session_status} - <a href='$method_url' target='_blank'>$method_url</a>, Error!<br>";
                 } else {
-                    echo "url = <a href='$method_url' target='_blank'>$method_url</a>, Ok!<br>";
+                    echo "{$session_status} - <a href='$method_url' target='_blank'>$method_url</a>, Ok!<br>";
                 }
 //
-                if ($total > 10) {
-                    break 2;
-                }
+//                if ($total > 10) {
+//                    break 2;
+//                }
             }
         }
 
         echo "<div>total: $total, error_total = $error_total</div>";
+        echo "<div>session total: $session_total</div>";
 
         $session_count = $this->getFolderItemCount($system_session_path);
-        echo "<div>session count: $session_count</div>";
+        echo "<div>session file count: $session_count</div>";
 
         $this->showTime();
     }
@@ -308,6 +317,14 @@ class Session_scanner extends CI_Controller
             return true;
         }
 
+        return false;
+    }
+
+    private function isEnableSession($header)
+    {
+        if (strpos($header, "PHPSESSID=")) {
+            return true;
+        }
         return false;
     }
 }
